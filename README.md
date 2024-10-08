@@ -25,7 +25,7 @@ npm run lint
 
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
-# 2. Notebook
+# 2. Notebook（更新中）
 
 项目视频：[尚硅谷VUE项目实战，前端项目-尚品汇](https://www.bilibili.com/video/BV1Vf4y1T7bw) 
 

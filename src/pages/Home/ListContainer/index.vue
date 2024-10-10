@@ -4,19 +4,7 @@
         <div class="sortList clearfix">
             <div class="center">
                 <!--banner轮播-->
-                <div class="swiper-container" id="mySwiper">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide">
-                            <img src="./imgs/banner1.jpg" />
-                        </div>
-                    </div>
-                    <!-- 如果需要分页器 -->
-                    <div class="swiper-pagination"></div>
-
-                    <!-- 如果需要导航按钮 -->
-                    <div class="swiper-button-prev"></div>
-                    <div class="swiper-button-next"></div>
-                </div>
+                <CarouseIndex :list="bannerList"></CarouseIndex>
             </div>
             <div class="right">
                 <div class="news">
@@ -103,9 +91,23 @@
 </template>
 
 <script>
-export default {
-    name: 'ListContainer'
-}
+    import { mapState } from 'vuex'
+
+    export default {
+        name: 'ListContainer',
+        computed: {
+            ...mapState({
+                bannerList: state => state.home.bannerList
+            })
+        },
+        mounted() {
+            // mounted: 组件挂在完毕，正常来说组件结构（DOM）已经全了
+            // 派发action，通过vuex发起ajax请求，将数据存储在仓库里
+            this.$store.dispatch('getBannerList')
+        },
+        
+        
+    }
 </script>
 
 <style lang="less", scoped>
@@ -114,7 +116,7 @@ export default {
         margin: 0 auto;
 
         .sortList {
-            height: 464px;
+            height: 510px;
             padding-left: 210px;
 
             .center {

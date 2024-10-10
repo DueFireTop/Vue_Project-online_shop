@@ -7,8 +7,7 @@
         <TodayRecommend></TodayRecommend>
         <ProductRank></ProductRank>
         <GuessLike></GuessLike> 
-        <Floor></Floor>
-        <Floor></Floor>
+        <Floor v-for="(floor, index) in floorList" :key="floor.id" :floorListDemo="floor"></Floor>
 
         <Brand></Brand>
 
@@ -23,6 +22,9 @@ import ProductRank from '@/pages/Home/ProductRank';
 import GuessLike from '@/pages/Home/GuessLike';
 import Floor from '@/pages/Home/Floor';
 import Brand from '@/pages/Home/Brand';
+
+import { mapState } from 'vuex';
+
 export default {
     name: 'HomeIndex',
     components: {
@@ -32,6 +34,15 @@ export default {
         GuessLike,
         Floor,
         Brand
+    },
+    computed: {
+        ...mapState({
+            floorList: state => state.home.floorList
+        })
+    },
+    mounted() {
+        // 派发action，获取Floor组件的数组
+        this.$store.dispatch('getFloorList')
     }
 
 }

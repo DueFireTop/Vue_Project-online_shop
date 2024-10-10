@@ -5,6 +5,10 @@ import App from './App.vue'
 import TypeNav from '@/components/TypeNav'
 Vue.component(TypeNav.name, TypeNav)
 
+// 轮播图组件（全局组件）
+import CarouseIndex from '@/components/Carousel'
+Vue.component(CarouseIndex.name, CarouseIndex)
+
 Vue.config.productionTip = false // 关闭提示, 默认为true
 
 // 引入路由
@@ -19,6 +23,12 @@ import ElementUI from 'element-ui';
 // 引入element-ui全部样式
 import 'element-ui/lib/theme-chalk/index.css';
 Vue.use(ElementUI);
+
+// 引入mockServe.js
+import '@/mock/mockServe'
+
+// 引入swiper样式
+import "swiper/css/swiper.css"
 
 new Vue({
   render: h => h(App),

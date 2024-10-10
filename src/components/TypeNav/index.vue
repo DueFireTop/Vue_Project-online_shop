@@ -3,34 +3,36 @@
         <!-- 商品分类导航 -->
         <div class="type-nav">
             <div class="container">
-                <div @mouseleave="leaveIndex">
+                <div @mouseleave="leaveShowSort" @mouseenter="enterShowSort">
                     <h2 class="all">全部商品分类</h2>
-                    <div class="sort">
-                        <div class="all-sort-list2" @click="goSearch">
-                            <!-- :class="{cur:currentIndex === index}" 如果当前鼠标移动到哪个一级分类，就给哪个分类添加一个cur样式 -->
-                            <div class="item" v-for="(c1, index) in categoryList" :key="c1.categoryId" :class="{cur:currentIndex === index}">
-                                <h3 @mouseenter="changeIndex(index)" >
-                                    <!-- 给a标签添加自定义属性 data-category-name -->
-                                    <a :data-categoryName="c1.categoryName" :data-category1Id="c1.categoryId">{{ c1.categoryName }}</a>
-                                </h3>
-                                <!-- :style="{display: currentIndex === index ? 'block' : 'none'}" 如果当前鼠标移动到哪个一级分类，就给哪个一级分类的display属性添加一个block -->
-                                <div class="item-list clearfix" :style="{display: currentIndex === index ? 'block' : 'none'}">
-                                    <div class="subitem" v-for="(c2, index) in c1.categoryChild" :key="c2.categoryId">
-                                        <dl class="fore">
-                                            <dt>
-                                                <a :data-categoryName="c2.categoryName" :data-category2Id="c2.categoryId">{{ c2.categoryName }}</a>
-                                            </dt>
-                                            <dd>
-                                                <em v-for="(c3, index) in c2.categoryChild" :key="c3.categoryId">
-                                                    <a :data-categoryName="c3.categoryName" :data-category3Id="c3.categoryId">{{ c3.categoryName }}</a>
-                                                </em>
-                                            </dd>
-                                        </dl>
+                    <transition name="sort">
+                        <div class="sort" v-show="isShowSort">
+                            <div class="all-sort-list2" @click="goSearch">
+                                <!-- :class="{cur:currentIndex === index}" 如果当前鼠标移动到哪个一级分类，就给哪个分类添加一个cur样式 -->
+                                <div class="item" v-for="(c1, index) in categoryList" :key="c1.categoryId" :class="{cur:currentIndex === index}">
+                                    <h3 @mouseenter="changeIndex(index)" >
+                                        <!-- 给a标签添加自定义属性 data-category-name -->
+                                        <a :data-categoryName="c1.categoryName" :data-category1Id="c1.categoryId">{{ c1.categoryName }}</a>
+                                    </h3>
+                                    <!-- :style="{display: currentIndex === index ? 'block' : 'none'}" 如果当前鼠标移动到哪个一级分类，就给哪个一级分类的display属性添加一个block -->
+                                    <div class="item-list clearfix" :style="{display: currentIndex === index ? 'block' : 'none'}">
+                                        <div class="subitem" v-for="(c2, index) in c1.categoryChild" :key="c2.categoryId">
+                                            <dl class="fore">
+                                                <dt>
+                                                    <a :data-categoryName="c2.categoryName" :data-category2Id="c2.categoryId">{{ c2.categoryName }}</a>
+                                                </dt>
+                                                <dd>
+                                                    <em v-for="(c3, index) in c2.categoryChild" :key="c3.categoryId">
+                                                        <a :data-categoryName="c3.categoryName" :data-category3Id="c3.categoryId">{{ c3.categoryName }}</a>
+                                                    </em>
+                                                </dd>
+                                            </dl>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </transition>
                 </div>
                 <nav class="nav">
                     <a href="###">服装城</a>
@@ -62,7 +64,7 @@ export default {
         return {
         // 存储用户鼠标移动到哪个一级分类
         currentIndex: -1,
-        
+        isShowSort: true, // 控制商品分类的显示与隐藏
         }
     },
     computed: {
@@ -89,8 +91,14 @@ export default {
         changeIndex:throttle(function(index){
             this.currentIndex = index;
         }, 50),
-        leaveIndex(){
+        /**
+         * 鼠标离开时，如果不在home页面，就隐藏商品分类
+         */
+        leaveShowSort(){
             this.currentIndex = -1;
+            if (this.$route.path !== '/home') {
+                this.isShowSort = false;
+            }
         },
         goSearch(event){
             // 编程式导航 + 事件委派
@@ -115,19 +123,31 @@ export default {
                 }
 
                 // 整理完参数
-                // console.log(location, query)
-                location.query = query
+                // 路由跳转时，如果带有params参数，顺便传递过去
+                if(this.$route.params) {
+                    location.params = this.$route.params
+                    location.query = query
+                }
 
                 // 路由跳转
                 this.$router.push(location)
             }
-            
+        },
+        /**
+         * 当鼠标移入时，显示商品分类列表
+         */
+        enterShowSort(){
+            this.isShowSort = true
         }
     },
     // 组件挂载完毕，可以向服务器发请求
     mounted() {
-        // 通知vuex发请求，获取数据，存储与仓库之中
-        this.$store.dispatch('categoryList')
+        
+
+        // 当组件挂载完毕，如果不是Home组件，就让 isShowSort 属性变为 false
+        if (this.$route.path !== '/home'){
+            this.isShowSort = false;
+        }
     },
 }
 </script>
@@ -168,7 +188,7 @@ export default {
                 left: 0;
                 top: 45px;
                 width: 210px;
-                height: 461px;
+                height: 510px;
                 position: absolute;
                 background: #fafafa;
                 z-index: 999;
@@ -249,6 +269,20 @@ export default {
                     }
                 }
             }
+
+            // 过渡动画的样式
+            // 过渡动画进入状态
+            .sort-enter {
+                height: 0px;
+            }
+            // 过渡动画结束状态
+            .sort-enter-to {
+                height: 510px;
+            }
+            .sort-enter-active {
+                transition: all 0.5s linear; // 过渡时间, 过渡方式
+            }
+
         }
     }
 </style>
